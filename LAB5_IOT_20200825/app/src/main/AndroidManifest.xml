@@ -13,7 +13,19 @@
         android:theme="@style/Theme.LAB5_20200825_IOT"
         tools:targetApi="31">
         <activity
-            android:name=".MainActivity"
+            android:name=".DetallesTarea"
+            android:exported="false" />
+        <activity
+            android:name=".EditarTarea"
+            android:exported="false" />
+        <activity
+            android:name=".NuevaTarea"
+            android:exported="false" />
+        <activity
+            android:name=".ListaTareas"
+            android:exported="false" />
+        <activity
+            android:name=".Inicio"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
