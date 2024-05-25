@@ -40,10 +40,10 @@ public class Inicio extends AppCompatActivity {
             public void onClick(View v) {
                 String codigo = codigoPUCP.getText().toString().trim();
                 if (codigo.length() == 8 && codigo.matches("\\d+")) {
-                    // Cargar las tareas y recordatorios aquí
+
                     cargarTareas(codigo);
 
-                    // Iniciar la actividad de ListaTareas
+
                     Intent intent = new Intent(Inicio.this, ListaTareas.class);
                     intent.putExtra("codigoPUCP", codigo);
                     startActivity(intent);
@@ -74,12 +74,12 @@ public class Inicio extends AppCompatActivity {
             tareas = gson.fromJson(sb.toString(), taskListType);
 
         } catch (IOException e) {
-            // Si no se encuentran tareas, inicializar una lista vacía
+
             tareas = new ArrayList<>();
         }
     }
 
-    // Método para guardar tareas (se llamará desde otra actividad)
+
     public void guardarTareas(String codigoPUCP, List<TareaData> tareas) {
         try {
             FileOutputStream fos = openFileOutput("tasks_" + codigoPUCP + ".json", MODE_PRIVATE);

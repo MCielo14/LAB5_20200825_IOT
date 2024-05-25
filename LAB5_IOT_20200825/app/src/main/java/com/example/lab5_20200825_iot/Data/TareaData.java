@@ -14,6 +14,7 @@ public class TareaData implements Serializable {
     private boolean completa;
 
     public TareaData(String tituloTarea, String descripcion, long fechaVencimiento, long horaVencimiento, long fechaRecordatorio, long horaRecordatorio) {
+       // Para poner el id con UUID.randomUUID().toString(); se hizo uso de ChatGPT
         this.id = UUID.randomUUID().toString();
         this.tituloTarea = tituloTarea;
         this.descripcion = descripcion;
@@ -83,6 +84,7 @@ public class TareaData implements Serializable {
     public void setCompleta(boolean completa) {
         this.completa = completa;
     }
+    // Para poner el checkbox se hizo uso un listener en tiempo real se hizo con ChatGPT
 
     @Override
     public boolean equals(Object obj) {

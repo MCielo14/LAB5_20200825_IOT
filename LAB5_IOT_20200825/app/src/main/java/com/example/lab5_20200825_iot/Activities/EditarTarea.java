@@ -165,11 +165,10 @@ public class EditarTarea extends AppCompatActivity {
             Type taskListType = new TypeToken<ArrayList<TareaData>>(){}.getType();
             tareas = gson.fromJson(sb.toString(), taskListType);
         } catch (IOException e) {
-            // Si no se encuentran tareas, inicializar una lista vacía
             tareas = new ArrayList<>();
         }
 
-        // Encontrar y reemplazar la tarea original con la tarea editada
+
         for (int i = 0; i < tareas.size(); i++) {
             TareaData tarea = tareas.get(i);
             if (tarea.equals(tareaData)) {

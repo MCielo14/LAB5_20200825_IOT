@@ -1,8 +1,11 @@
 package com.example.lab5_20200825_iot.Activities;
 
+import android.app.AlarmManager;
 import android.app.DatePickerDialog;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -11,9 +14,12 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationManagerCompat;
 
 import com.example.lab5_20200825_iot.Data.TareaData;
 import com.example.lab5_20200825_iot.R;
+import com.example.lab5_20200825_iot.Notificaciones.ReminderReciever;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -53,6 +59,11 @@ public class NuevaTarea extends AppCompatActivity {
         Intent intent = getIntent();
         codigoPUCP = intent.getStringExtra("codigoPUCP");
 
+
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.POST_NOTIFICATIONS}, 1);
+        }
+
         calendarVencimiento = Calendar.getInstance();
         calendarRecordatorio = Calendar.getInstance();
 
@@ -68,6 +79,7 @@ public class NuevaTarea extends AppCompatActivity {
             if (!titulo.isEmpty() && !descripcion.isEmpty() && fechaVencimiento > 0 && horaVencimiento > 0 && fechaRecordatorio > 0 && horaRecordatorio > 0) {
                 TareaData nuevaTarea = new TareaData(titulo, descripcion, fechaVencimiento, horaVencimiento, fechaRecordatorio, horaRecordatorio);
                 guardarTarea(codigoPUCP, nuevaTarea);
+                programarRecordatorio(nuevaTarea);
 
                 Intent listaTareasIntent = new Intent(NuevaTarea.this, ListaTareas.class);
                 listaTareasIntent.putExtra("codigoPUCP", codigoPUCP);
@@ -141,7 +153,6 @@ public class NuevaTarea extends AppCompatActivity {
             Type taskListType = new TypeToken<ArrayList<TareaData>>(){}.getType();
             tareas = gson.fromJson(sb.toString(), taskListType);
         } catch (IOException e) {
-            // Si no se encuentran tareas, inicializar una lista vacía
             tareas = new ArrayList<>();
         }
 
@@ -155,6 +166,30 @@ public class NuevaTarea extends AppCompatActivity {
             fos.close();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void programarRecordatorio(TareaData nuevaTarea) {
+        Intent intent = new Intent(NuevaTarea.this, ReminderReciever.class);
+        intent.putExtra("title", nuevaTarea.getTituloTarea());
+        intent.putExtra("message", "Recordatorio de la tarea: " + nuevaTarea.getTituloTarea());
+
+        long tiempoRestante = nuevaTarea.getFechaVencimiento() - nuevaTarea.getFechaRecordatorio();
+        int priority;
+        if (tiempoRestante <= 3 * 60 * 60 * 1000) {
+            priority = NotificationManagerCompat.IMPORTANCE_HIGH;
+        } else if (tiempoRestante <= 6 * 60 * 60 * 1000) {
+            priority = NotificationManagerCompat.IMPORTANCE_DEFAULT;
+        } else {
+            priority = NotificationManagerCompat.IMPORTANCE_LOW;
+        }
+        intent.putExtra("priority", priority);
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(NuevaTarea.this, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        if (alarmManager != null) {
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, nuevaTarea.getFechaRecordatorio(), pendingIntent);
         }
     }
 }

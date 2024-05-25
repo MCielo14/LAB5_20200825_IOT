@@ -1,6 +1,7 @@
 package com.example.lab5_20200825_iot.Activities;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -9,11 +10,13 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.lab5_20200825_iot.Adapaters.TareaAdapter;
 import com.example.lab5_20200825_iot.Data.TareaData;
+import com.example.lab5_20200825_iot.Notificaciones.NotificationHelper;
 import com.example.lab5_20200825_iot.R;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -50,19 +53,24 @@ public class ListaTareas extends AppCompatActivity {
         Intent intent = getIntent();
         codigoPUCP = intent.getStringExtra("codigoPUCP");
 
-        // Configurar RecyclerView
+
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.POST_NOTIFICATIONS}, 1);
+        }
+
+
         recyclerView = findViewById(R.id.recycler_view_tareas);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        // Inicializar lista de tareas
+
         tareaList = new ArrayList<>();
         cargarTareas(codigoPUCP);
 
-        // Configurar adaptador
+
         tareaAdapter = new TareaAdapter(this, tareaList, codigoPUCP, tareaDetailsLauncher);
         recyclerView.setAdapter(tareaAdapter);
 
-        // Configurar botones
+
         Button crearNuevaTarea = findViewById(R.id.crearNuevaTarea);
         ImageButton buttonhomesuper1 = findViewById(R.id.buttonhomesuper);
 
@@ -76,6 +84,10 @@ public class ListaTareas extends AppCompatActivity {
             Intent intent1 = new Intent(ListaTareas.this, Inicio.class);
             startActivity(intent1);
         });
+
+
+        NotificationHelper.createNotificationChannels(this);
+        sendPersistentNotifications();
     }
 
     @Override
@@ -83,6 +95,7 @@ public class ListaTareas extends AppCompatActivity {
         super.onResume();
         cargarTareas(codigoPUCP);
         tareaAdapter.updateData(tareaList);
+        sendPersistentNotifications();
     }
 
     private void cargarTareas(String codigoPUCP) {
@@ -106,5 +119,13 @@ public class ListaTareas extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void sendPersistentNotifications() {
+        int tareasEnCurso = tareaList.size();
+        String usuario = "Usuario logueado: " + codigoPUCP;
+        String title = "Tareas en curso: " + tareasEnCurso;
+
+        NotificationHelper.sendPersistentNotification(this, title, usuario);
     }
 }
