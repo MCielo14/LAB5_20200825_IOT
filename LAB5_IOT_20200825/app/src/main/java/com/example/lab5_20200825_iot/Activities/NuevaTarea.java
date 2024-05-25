@@ -174,7 +174,8 @@ public class NuevaTarea extends AppCompatActivity {
         intent.putExtra("title", nuevaTarea.getTituloTarea());
         intent.putExtra("message", "Recordatorio de la tarea: " + nuevaTarea.getTituloTarea());
 
-        long tiempoRestante = nuevaTarea.getFechaVencimiento() - nuevaTarea.getFechaRecordatorio();
+
+        long tiempoRestante = (nuevaTarea.getFechaVencimiento() + nuevaTarea.getHoraVencimiento()) - (nuevaTarea.getFechaRecordatorio() + nuevaTarea.getHoraRecordatorio());
         int priority;
         if (tiempoRestante <= 3 * 60 * 60 * 1000) {
             priority = NotificationManagerCompat.IMPORTANCE_HIGH;
@@ -189,7 +190,8 @@ public class NuevaTarea extends AppCompatActivity {
 
         AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         if (alarmManager != null) {
-            alarmManager.setExact(AlarmManager.RTC_WAKEUP, nuevaTarea.getFechaRecordatorio(), pendingIntent);
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, nuevaTarea.getFechaRecordatorio() + nuevaTarea.getHoraRecordatorio(), pendingIntent);
         }
     }
+
 }
