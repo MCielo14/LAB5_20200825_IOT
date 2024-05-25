@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Inicio">
+    tools:context=".Activities.Inicio">
 
     <LinearLayout
         android:layout_width="409dp"
@@ -89,7 +89,10 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:hint="Código" />
+                    android:hint="Código"
+                    android:inputType="number"
+                    android:maxLength="8"
+                    />
             </LinearLayout>
 
             <LinearLayout
