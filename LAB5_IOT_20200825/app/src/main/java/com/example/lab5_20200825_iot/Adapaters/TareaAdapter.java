@@ -8,12 +8,13 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.lab5_20200825_iot.Activities.DetallesTarea;
 import com.example.lab5_20200825_iot.Data.TareaData;
 import com.example.lab5_20200825_iot.R;
-import com.example.lab5_20200825_iot.Activities.DetallesTarea;
 
 import java.util.List;
 
@@ -21,11 +22,13 @@ public class TareaAdapter extends RecyclerView.Adapter<TareaAdapter.ViewHolder> 
     private List<TareaData> tareaList;
     private Context context;
     private String codigoPUCP;
+    private final ActivityResultLauncher<Intent> tareaDetailsLauncher;
 
-    public TareaAdapter(Context context, List<TareaData> tareaList, String codigoPUCP) {
+    public TareaAdapter(Context context, List<TareaData> tareaList, String codigoPUCP, ActivityResultLauncher<Intent> tareaDetailsLauncher) {
         this.context = context;
         this.tareaList = tareaList;
         this.codigoPUCP = codigoPUCP;
+        this.tareaDetailsLauncher = tareaDetailsLauncher;
     }
 
     @NonNull
@@ -43,8 +46,8 @@ public class TareaAdapter extends RecyclerView.Adapter<TareaAdapter.ViewHolder> 
         holder.detallesButton.setOnClickListener(v -> {
             Intent intent = new Intent(context, DetallesTarea.class);
             intent.putExtra("tareaData", tarea);
-            intent.putExtra("codigoPUCP", codigoPUCP); // Pasar el código PUCP
-            context.startActivity(intent);
+            intent.putExtra("codigoPUCP", codigoPUCP);
+            tareaDetailsLauncher.launch(intent);
         });
     }
 

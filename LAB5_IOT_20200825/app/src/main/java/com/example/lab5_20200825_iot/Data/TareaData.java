@@ -1,8 +1,10 @@
 package com.example.lab5_20200825_iot.Data;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 public class TareaData implements Serializable {
+    private String id;
     private String tituloTarea;
     private String descripcion;
     private long fechaVencimiento;
@@ -12,6 +14,7 @@ public class TareaData implements Serializable {
     private boolean completa;
 
     public TareaData(String tituloTarea, String descripcion, long fechaVencimiento, long horaVencimiento, long fechaRecordatorio, long horaRecordatorio) {
+        this.id = UUID.randomUUID().toString();
         this.tituloTarea = tituloTarea;
         this.descripcion = descripcion;
         this.fechaVencimiento = fechaVencimiento;
@@ -19,6 +22,10 @@ public class TareaData implements Serializable {
         this.fechaRecordatorio = fechaRecordatorio;
         this.horaRecordatorio = horaRecordatorio;
         this.completa = false;
+    }
+
+    public String getId() {
+        return id;
     }
 
     public String getTituloTarea() {

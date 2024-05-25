@@ -6,7 +6,6 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -18,7 +17,6 @@ import com.google.gson.reflect.TypeToken;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
@@ -30,8 +28,8 @@ public class DetallesTarea extends AppCompatActivity {
     private TextView tituloDetalle, descripcionDetalle, fechaVencimientoDetalle, horaVencimientoDetalle, fechaRecordatorioDetalle, horaRecordatorioDetalle;
     private CheckBox tareaCompletaCheckBox;
     private Button editarButton, borrarButton;
-    private String codigoPUCP;
     private TareaData tareaData;
+    private String codigoPUCP;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,28 +49,34 @@ public class DetallesTarea extends AppCompatActivity {
         ImageButton buttonhomesuper1 = findViewById(R.id.buttonhomesuper);
         buttonhomesuper1.setOnClickListener(v -> {
             Intent intent = new Intent(DetallesTarea.this, ListaTareas.class);
-            intent.putExtra("codigoPUCP", codigoPUCP); // Pasar el código PUCP
+            intent.putExtra("codigoPUCP", codigoPUCP);
             startActivity(intent);
         });
 
         editarButton.setOnClickListener(v -> {
             Intent intent = new Intent(DetallesTarea.this, EditarTarea.class);
-            intent.putExtra("codigoPUCP", codigoPUCP); // Pasar el código PUCP
-            intent.putExtra("tareaData", tareaData); // Pasar la tarea
+            intent.putExtra("tareaData", tareaData);
+            intent.putExtra("codigoPUCP", codigoPUCP);
             startActivity(intent);
+        });
+
+        borrarButton.setOnClickListener(v -> {
+            borrarTarea();
+        });
+
+        tareaCompletaCheckBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (tareaData != null) {
+                tareaData.setCompleta(isChecked);
+                actualizarTarea(tareaData);
+            }
         });
 
         Intent intent = getIntent();
         tareaData = (TareaData) intent.getSerializableExtra("tareaData");
-        codigoPUCP = intent.getStringExtra("codigoPUCP"); // Obtener el código PUCP
+        codigoPUCP = intent.getStringExtra("codigoPUCP");
         if (tareaData != null) {
             displayTaskDetails(tareaData);
         }
-
-        tareaCompletaCheckBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            tareaData.setCompleta(isChecked);
-            guardarTarea(codigoPUCP, tareaData);
-        });
     }
 
     private void displayTaskDetails(TareaData tareaData) {
@@ -88,8 +92,7 @@ public class DetallesTarea extends AppCompatActivity {
         tareaCompletaCheckBox.setChecked(tareaData.isCompleta());
     }
 
-    private void guardarTarea(String codigoPUCP, TareaData tareaData) {
-        List<TareaData> tareas = new ArrayList<>();
+    private void actualizarTarea(TareaData tareaActualizada) {
         try {
             FileInputStream fis = openFileInput("tasks_" + codigoPUCP + ".json");
             InputStreamReader isr = new InputStreamReader(fis);
@@ -104,28 +107,56 @@ public class DetallesTarea extends AppCompatActivity {
             fis.close();
 
             Gson gson = new Gson();
-            Type taskListType = new TypeToken<ArrayList<TareaData>>(){}.getType();
-            tareas = gson.fromJson(sb.toString(), taskListType);
-        } catch (Exception e) {
-            // Si no se encuentran tareas, inicializar una lista vacía
-            tareas = new ArrayList<>();
-        }
+            Type taskListType = new TypeToken<ArrayList<TareaData>>() {}.getType();
+            List<TareaData> tareas = gson.fromJson(sb.toString(), taskListType);
 
-        // Buscar y actualizar la tarea existente
-        for (int i = 0; i < tareas.size(); i++) {
-            if (tareas.get(i).equals(tareaData)) {
-                tareas.set(i, tareaData);
-                break;
+            for (int i = 0; i < tareas.size(); i++) {
+                if (tareas.get(i).getId().equals(tareaActualizada.getId())) {
+                    tareas.set(i, tareaActualizada);
+                    break;
+                }
             }
-        }
 
-        try {
-            FileOutputStream fos = openFileOutput("tasks_" + codigoPUCP + ".json", MODE_PRIVATE);
-            Gson gson = new Gson();
             String json = gson.toJson(tareas);
+            FileOutputStream fos = openFileOutput("tasks_" + codigoPUCP + ".json", MODE_PRIVATE);
             fos.write(json.getBytes());
             fos.close();
-        } catch (IOException e) {
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void borrarTarea() {
+        try {
+            FileInputStream fis = openFileInput("tasks_" + codigoPUCP + ".json");
+            InputStreamReader isr = new InputStreamReader(fis);
+            BufferedReader br = new BufferedReader(isr);
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = br.readLine()) != null) {
+                sb.append(line);
+            }
+            br.close();
+            isr.close();
+            fis.close();
+
+            Gson gson = new Gson();
+            Type taskListType = new TypeToken<ArrayList<TareaData>>() {}.getType();
+            List<TareaData> tareas = gson.fromJson(sb.toString(), taskListType);
+
+            tareas.removeIf(tarea -> tarea.getId().equals(tareaData.getId()));
+
+            String json = gson.toJson(tareas);
+            FileOutputStream fos = openFileOutput("tasks_" + codigoPUCP + ".json", MODE_PRIVATE);
+            fos.write(json.getBytes());
+            fos.close();
+
+            Intent resultIntent = new Intent();
+            setResult(RESULT_OK, resultIntent);
+            finish();
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

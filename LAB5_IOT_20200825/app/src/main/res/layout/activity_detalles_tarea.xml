@@ -88,7 +88,8 @@
                             android:id="@+id/titulodetalle"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="  TextView" />
+                            android:text="  TextView"
+                            android:gravity="center"/>
                     </LinearLayout>
                 </LinearLayout>
 
@@ -102,14 +103,16 @@
                         android:layout_width="154dp"
                         android:layout_height="match_parent"
                         android:background="@drawable/borde_negro"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"
+                        android:gravity="center">
 
                         <TextView
                             android:id="@+id/Descripciónid"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="  Descripción :" />
+                            android:text="  Descripción :"
+                            android:gravity="center"/>
                     </LinearLayout>
 
                     <LinearLayout
@@ -124,7 +127,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="  TextView" />
+                            android:text="  TextView"
+                            android:gravity="center"/>
                     </LinearLayout>
 
                     <LinearLayout
@@ -195,7 +199,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="  TextView" />
+                            android:text="  TextView"
+                            android:gravity="center"/>
                     </LinearLayout>
 
                 </LinearLayout>
@@ -233,7 +238,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="  TextView" />
+                            android:text="  TextView"
+                            android:gravity="center"/>
                     </LinearLayout>
 
                 </LinearLayout>
@@ -286,7 +292,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="  TextView" />
+                            android:text="  TextView"
+                            android:gravity="center"/>
                     </LinearLayout>
                 </LinearLayout>
 
@@ -323,7 +330,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="  TextView" />
+                            android:text="  TextView"
+                            android:gravity="center"/>
                     </LinearLayout>
                 </LinearLayout>
 

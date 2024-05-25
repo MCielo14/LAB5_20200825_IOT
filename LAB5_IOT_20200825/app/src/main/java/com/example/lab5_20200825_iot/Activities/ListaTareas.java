@@ -2,10 +2,12 @@ package com.example.lab5_20200825_iot.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -30,6 +32,16 @@ public class ListaTareas extends AppCompatActivity {
     private List<TareaData> tareaList;
     private String codigoPUCP;
 
+    private ActivityResultLauncher<Intent> tareaDetailsLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == RESULT_OK) {
+                    cargarTareas(codigoPUCP);
+                    tareaAdapter.updateData(tareaList);
+                }
+            }
+    );
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,7 +59,7 @@ public class ListaTareas extends AppCompatActivity {
         cargarTareas(codigoPUCP);
 
         // Configurar adaptador
-        tareaAdapter = new TareaAdapter(this, tareaList, codigoPUCP);
+        tareaAdapter = new TareaAdapter(this, tareaList, codigoPUCP, tareaDetailsLauncher);
         recyclerView.setAdapter(tareaAdapter);
 
         // Configurar botones
@@ -61,10 +73,16 @@ public class ListaTareas extends AppCompatActivity {
         });
 
         buttonhomesuper1.setOnClickListener(v -> {
-            Intent intentHome = new Intent(ListaTareas.this, ListaTareas.class);
-            intentHome.putExtra("codigoPUCP", codigoPUCP);
-            startActivity(intentHome);
+            Intent intent1 = new Intent(ListaTareas.this, Inicio.class);
+            startActivity(intent1);
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        cargarTareas(codigoPUCP);
+        tareaAdapter.updateData(tareaList);
     }
 
     private void cargarTareas(String codigoPUCP) {
@@ -82,13 +100,8 @@ public class ListaTareas extends AppCompatActivity {
             fis.close();
 
             Gson gson = new Gson();
-            Type taskListType = new TypeToken<ArrayList<TareaData>>(){}.getType();
+            Type taskListType = new TypeToken<ArrayList<TareaData>>() {}.getType();
             tareaList = gson.fromJson(sb.toString(), taskListType);
-
-            // Notificar al adaptador que los datos han cambiado
-            if (tareaAdapter != null) {
-                tareaAdapter.updateData(tareaList);
-            }
 
         } catch (Exception e) {
             e.printStackTrace();
