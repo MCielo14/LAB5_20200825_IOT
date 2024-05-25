@@ -9,6 +9,7 @@ public class TareaData implements Serializable {
     private long horaVencimiento;
     private long fechaRecordatorio;
     private long horaRecordatorio;
+    private boolean completa;
 
     public TareaData(String tituloTarea, String descripcion, long fechaVencimiento, long horaVencimiento, long fechaRecordatorio, long horaRecordatorio) {
         this.tituloTarea = tituloTarea;
@@ -17,6 +18,7 @@ public class TareaData implements Serializable {
         this.horaVencimiento = horaVencimiento;
         this.fechaRecordatorio = fechaRecordatorio;
         this.horaRecordatorio = horaRecordatorio;
+        this.completa = false;
     }
 
     public String getTituloTarea() {
@@ -65,5 +67,26 @@ public class TareaData implements Serializable {
 
     public void setHoraRecordatorio(long horaRecordatorio) {
         this.horaRecordatorio = horaRecordatorio;
+    }
+
+    public boolean isCompleta() {
+        return completa;
+    }
+
+    public void setCompleta(boolean completa) {
+        this.completa = completa;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        TareaData tareaData = (TareaData) obj;
+        return tituloTarea.equals(tareaData.tituloTarea) &&
+                descripcion.equals(tareaData.descripcion) &&
+                fechaVencimiento == tareaData.fechaVencimiento &&
+                horaVencimiento == tareaData.horaVencimiento &&
+                fechaRecordatorio == tareaData.fechaRecordatorio &&
+                horaRecordatorio == tareaData.horaRecordatorio;
     }
 }
